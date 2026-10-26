@@ -747,3 +747,224 @@ body {
   .js-ready .reveal:not(.is-visible) .doodle path { stroke-dashoffset: 0; }
   .btn:hover, .service-card:hover, .testimonial:hover, .circle-btn:hover, .badge:hover, .social-link:hover { transform: none; rotate: none; }
 }
+
+/* ==========================================================================
+   MOBILE FIXES (phones only). Nothing in here affects desktop.
+   ========================================================================== */
+@media (max-width: 767px) {
+
+  /* Hero paint: fade it out toward the top-left so it sits behind the portrait */
+.hero__paint {
+  width: 100%;
+  opacity: .6;
+  -webkit-mask-image: radial-gradient(ellipse 95% 55% at 100% 100%, #000 0%, transparent 75%);
+          mask-image: radial-gradient(ellipse 95% 55% at 100% 100%, #000 0%, transparent 75%);
+}
+  
+/* "Open for work" tag: smaller, kept inside the frame, overlapping the hair */
+.hero-portrait__tag {
+  left: -9%;            /* positive = further inside the frame. Raise it if the ring still touches the left border */
+  top: 6%;
+  width: 116px;        /* ring size. Was 190px on desktop */
+  rotate: -13deg;      /* a gentler tilt takes up less sideways space */
+}
+.hero-portrait__tag-text {
+  font-size: .60rem;
+  line-height: 1.3;
+  margin-bottom: .3rem;
+}
+
+/* Make the intro section the positioning reference for the badge */
+  .intro {
+    position: relative;
+  }
+
+  /* Position the badge beside the Follow Me area */
+  .intro .badge {
+    position: absolute;
+     right: 35px;        /* Smaller = move RIGHT, larger = move LEFT */
+    bottom: 30px;
+
+    /* Slightly smaller so it fits comfortably on mobile */
+    width: 96px;
+    font-size: 0.62rem;
+
+    /* Tilt control */
+    transform: rotate(6deg);
+
+
+    /* Keep the badge above the background decorations */
+    z-index: 2;
+  }
+
+  /* MOBILE FIX #3: Reduce statistics section height */
+.stats {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.stats__item {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+  /* MOBILE FIX #4: Hide only the "Hire Me" button
+     in the Explore My Top Creations section.
+     Desktop styling remains completely unchanged. */
+  .work .section-head--band > a.btn.btn--blue.btn--sm {
+    display: none;
+  }
+
+    /* MOBILE FIX #5: Reduce top and bottom spacing
+     around the Explore My Top Creations heading.
+     Desktop remains completely unchanged. */
+
+  .work .section-head--band {
+    padding-top: 22px;
+    padding-bottom: 5px;
+  }
+
+  
+  /* ==========================================================
+     MOBILE FIX #6: Compact project cards and enlarge previews
+     Desktop styles remain completely untouched.
+     ========================================================== */
+
+  /* Remove excessive vertical distribution in project details */
+  .project__info {
+    justify-content: flex-start;
+    gap: 16px;
+    padding-top: 16px;
+    padding-bottom: 12px;
+  }
+
+  
+  /* MOBILE FIX #6: Enlarge project image frames by 25%
+     Keep their internal padding and image positioning unchanged. */
+  .project__media {
+    width: 112%;
+    max-width: none;
+    justify-self: center;
+  }
+
+  
+  /* MOBILE FIX #7: Hide only the Let's Talk button
+     inside the blue Client Feedback section. */
+  .feedback .section-head > a.btn--white.btn--sm {
+    display: none;
+  }
+
+  
+  /* MOBILE FIX #8: Tighten the Client Feedback heading */
+  .feedback .section-title {
+    line-height: 1;
+  }
+
+  /* Reduce the space between the heading and testimonial cards */
+  .feedback .testimonials {
+    padding-top: 10px;
+  }
+
+  
+  /* ==========================================================
+     MOBILE FIX #9: Let's Talk decorative patterns and badge
+     Mobile only — desktop remains unchanged.
+     ========================================================== */
+
+  /* Make both decorative patterns longer */
+  .lets-talk .doodle {
+    
+    width: 29vw;
+  }
+
+  /* Make the left pattern steeper */
+  .lets-talk .doodle--left {
+    left: -5%;               /* Smaller = move LEFT */
+    top: 45%;               /* Smaller = move UP */
+    rotate: -15deg;
+  }
+
+  /* Make the right pattern steeper in the opposite direction */
+  .lets-talk .doodle--right {
+     right: -4%;              /* Smaller = move RIGHT */
+    top: 45%;               /* Smaller = move UP */
+    rotate: 0deg;
+    width: 30vw;
+  }
+
+  /* Thicken the blue decorative lines */
+  .lets-talk .doodle path {
+    stroke-width: 2;
+  }
+
+  /* Slightly reduce the central black badge */
+  .lets-talk .badge--lg {
+    width: 96px;
+    font-size: 0.60rem;
+  }
+
+  
+  /* MOBILE FIX #10: Reduce bottom space in the Let's Talk section */
+  .lets-talk {
+    padding-bottom: 24px;
+  }
+
+  
+  /* MOBILE FIX #11: Space below the Send Message button */
+  #contact-form .contact__details {
+    margin-top: 8px;
+    margin-bottom: 0;
+  }
+
+  /* Keep the email and location neatly stacked */
+  #contact-form .contact__details li {
+    align-items: flex-start;
+  }
+
+ 
+  /* MOBILE FIX #12: Move only the email and location */
+  .contact__details {
+    transform: translateY(24px);
+    gap: 2px;
+  }
+
+  
+  /* MOBILE FIX #13: Center footer navigation above copyright */
+
+  /* Stack the footer elements vertically */
+  .site-footer {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Put Home, Work, Contact, and Back to top first */
+  .site-footer__nav {
+    order: -1;
+    justify-content: center;
+    width: 100%;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* Keep the copyright line underneath the links */
+  .site-footer > p {
+    order: 1;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0;
+  }
+
+  /* MOBILE FIX #14: Remove empty space below copyright */
+  .site-footer {
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  .site-footer > p {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+
+}

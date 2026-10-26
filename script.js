@@ -424,6 +424,32 @@ function initCoils() {
 }
 
 
+/* MOBILE FIX #11: Move contact details below the form on phones.
+   On desktop, restore them to their original position. */
+function positionContactDetails() {
+  const details = document.querySelector('.contact__details');
+  const intro = document.querySelector('.contact__intro');
+  const introText = document.querySelector('.contact__text');
+  const form = document.getElementById('contact-form');
+  const formStatus = document.getElementById('form-status');
+
+  // Stop safely if any required element is missing.
+  if (!details || !introText || !form || !formStatus) return;
+
+  if (window.matchMedia('(max-width: 767px)').matches) {
+    // Place email and location after the Send Message button/status.
+    formStatus.after(details);
+  } else {
+    // Restore the original desktop position, below the intro paragraph.
+    introText.after(details);
+  }
+}
+
+// Apply the correct layout when the page loads and when its size changes.
+positionContactDetails();
+window.addEventListener('resize', positionContactDetails);
+
+
 /* --------------------------------------------------------------------------
    10. START EVERYTHING
    The script is loaded with "defer", so the HTML is already parsed here.

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hassan | Web Development, Bug Fixes &amp; Python Automation</title>
+  <meta name="description" content="Hassan is a web developer who builds clean, responsive websites, fixes existing site issues and creates Python automations." />
+  <meta name="theme-color" content="#FFFFFF" />
+
+  <!-- EXTERNAL ASSET 1: Google Fonts.
+       Outfit = main font. Instrument Serif (italic) = the small "Hassan" wordmark.
+       If the fonts fail to load, the fallback fonts in style.css are used. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
+  <!-- EXTERNAL ASSET 2: Tailwind via CDN (pinned version).
+       LIMITATION: the CDN builds styles inside the visitor's browser on every visit.
+       That is perfect for learning, but slower and not recommended for production.
+       For a real launch, use the Tailwind CLI to create one small static CSS file. -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    // Teach Tailwind our palette and font so we can write classes like "text-muted".
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#2F5BFF',   // primary electric blue
+            pale: '#E9EEFF',    // pale blue
+            sky: '#C7D7F5',     // secondary blue
+            ink: '#090909',     // main text
+            muted: '#666666',   // secondary text
+            line: '#D5D5D5'     // borders
+          },
+          fontFamily: { sans: ['Outfit', 'ui-sans-serif', 'system-ui', 'sans-serif'] }
+        }
+      }
+    };
+  </script>
+
+  <!-- Our own CSS, loaded AFTER Tailwind so it can refine it. -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="bg-white font-sans text-ink">
+
+  <!-- ======================================================================
+       ICON SPRITE: every icon is drawn ONCE here, then reused anywhere with
+       <svg><use href="#i-name"/></svg>. This keeps the HTML short.
+       ====================================================================== -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0C12 7 17 12 24 12C17 12 12 17 12 24C12 17 7 12 0 12C7 12 12 7 12 0Z"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6M14 4l-4 16"/></g></symbol>
+    <symbol id="i-bug" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m8 2 1.9 1.9M16 2l-1.9 1.9M9 7.1V6a3 3 0 0 1 6 0v1.1M12 20a6 6 0 0 1-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3a6 6 0 0 1-6 6ZM12 20v-9M6 13H2M18 13h4M6 17l-3 2M18 17l3 2M6 9 3 7M18 9l3-2"/></g></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m4 17 6-6-6-6M12 19h8"/></g></symbol>
+    <symbol id="i-quote" viewBox="0 0 24 24"><path fill="currentColor" d="M6 17h3l2-4V7H5v6h3l-2 4zm8 0h3l2-4V7h-6v6h3l-2 4z"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></g></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></g></symbol>
+    <!-- Hand-drawn curved arrow used next to section headings -->
+    <symbol id="i-doodle-arrow" viewBox="0 0 80 50"><g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12C22 8 44 6 52 14C58 21 48 30 40 24C34 19 42 12 52 18C60 24 62 34 70 42"/><path d="M70 42l-9-2M70 42l-2-9"/></g></symbol>
+    <!-- Brand icons -->
+    <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></symbol>
+    <symbol id="i-linkedin" viewBox="0 0 24 24"><path fill="currentColor" d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45Z"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path fill="currentColor" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></symbol>
+    <symbol id="i-whatsapp" viewBox="0 0 24 24"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></symbol>
+  </svg>
+
+  <a href="#home" class="skip-link">Skip to content</a>
+
+  <!-- ======================================================================
+       HEADER / NAVIGATION
+       RESPONSIVE TAILWIND CLASSES, explained:
+         "hidden md:flex"  = hidden by default (phones), becomes flex from 768px up.
+         "md:hidden"       = visible on phones, hidden from 768px up.
+       The part before the colon (md:) is a screen-size condition.
+       ====================================================================== -->
+  <header class="site-header" id="site-header">
+    <div class="site-header__inner">
+
+      <!-- PLACEHOLDER: change the wordmark text if you like -->
+      <a href="#home" class="wordmark" aria-label="Hassan, back to top">Hassan</a>
+
+      <!-- Center navigation (desktop). aria-current="true" marks the active page section. -->
+      <nav class="main-nav hidden items-center gap-1 md:flex" aria-label="Primary">
+        <a class="main-nav__link" data-nav href="#home" aria-current="true">Home</a>
+        <a class="main-nav__link" data-nav href="#about">About</a>
+        <a class="main-nav__link" data-nav href="#work">Work</a>
+        
+        <a class="main-nav__link" data-nav href="#contact">Contact</a>
+      </nav>
+
+      <div class="flex items-center justify-self-end gap-2">
+        <!-- Every "Let's Talk" button on the page points to #contact -->
+        <a class="btn btn--outline btn--sm" href="#contact">Let's Talk
+          <svg class="btn__icon" aria-hidden="true"><use href="#i-arrow" /></svg>
+        </a>
+
+        <!-- Hamburger (phones only). script.js toggles aria-expanded and the menu below. -->
+        <button id="menu-toggle" class="menu-toggle inline-flex items-center justify-center md:hidden" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+          <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h16M4 16h16"/></svg>
+          <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile menu panel: the "hidden" attribute is removed by script.js when opened -->
+    <nav id="mobile-menu" class="mobile-menu" aria-label="Mobile" hidden>
+      <a data-nav href="#home">Home</a>
+      <a data-nav href="#about">About</a>
+      <a data-nav href="#work">Work</a>
+      
+      <a data-nav href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <div class="page-wrap">
+    <!-- ====================================================================
+         THE PAGE FRAME. Every section below is a direct child of .page.
+         The thin outer border and the horizontal divider lines come from
+         style.css (".page > section"), so no section needs its own border.
+         ==================================================================== -->
+    <main class="page">
+
+      <!-- ================= 1. HERO ================= -->
+      <section id="home" class="hero" aria-labelledby="hero-title">
+        <img class="hero__paint" src="assets/blue paint.png" alt="" aria-hidden="true" />
+        <div class="hero__text reveal">
+          <h1 id="hero-title" class="hero__title">
+            <span class="hero__line">Web</span>
+            <span class="hero__line hero__line--blue">Development</span>
+            <span class="hero__line">&amp; more
+              <svg class="hero__sparkle" aria-hidden="true"><use href="#i-sparkle" /></svg>
+            </span>
+          </h1>
+          <a class="btn btn--blue" href="#work">View My Work
+            <svg class="btn__icon" aria-hidden="true"><use href="#i-arrow" /></svg>
+          </a>
+        </div>
+
+        <!-- ==============================================================
+             HERO PORTRAIT COMPONENT (replaceable)
+             Built from SEPARATE layers so nothing is flattened into one image:
+               1. __grain        blue dotted texture
+               2. __back-card    dark rotated rectangle
+               3. __image        YOUR transparent cutout photo
+               4. __decorations  blue hand-drawn curves (SVG)
+               5. __sparkle      small star on the card
+             TO REPLACE THE PORTRAIT: save a transparent PNG as
+             assets/hassan-portrait.png (or change the src below).
+             To move / resize it, edit the config variables at the TOP of style.css.
+             ============================================================== -->
+        <div class="hero-portrait">
+          
+          <!-- BACK PIECE: drawn BEFORE the card. The card hides its right end. -->
+<svg class="hero-portrait__arch" viewBox="0 0 380 540" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  <g class="arc-shift">
+    <path d="M378 165C392 200 380 -5 340 -5C305 -5 300 60 303 121" />
+  </g>
+</svg>
+          <div class="hero-portrait__card-mask" aria-hidden="true">
+          <div class="hero-portrait__card-unscale">
+          <div class="hero-portrait__back-card"></div>
+             </div>
+             </div>
+
+             <!-- FRONT PIECE: after the card, before the photo. Runs down the card face between head and sparkle, then hides behind the shirt. -->
+<svg class="hero-portrait__arch" viewBox="0 0 380 540" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  <g class="arc-shift">
+    <path d="M303 112C304 600 600 300 303 405" />
+  </g>
+</svg>
+
+          <!-- PLACEHOLDER IMAGE: replace the file, not the markup -->
+          <img class="hero-portrait__image" src="assets/portrait 02.png"
+               alt="Portrait of Hassan" width="800" height="1200"
+               data-fallback="Add your portrait" data-fallback-type="portrait" fetchpriority="high" />
+
+          <!-- FRONT LAYER: generated coil (settings in data-coil, drawn by initCoils() in script.js).
+     The "d" is only a fallback if JavaScript doesn't run. -->
+<svg class="hero-portrait__loops" viewBox="0 0 520 170" aria-hidden="true" focusable="false">
+  <path data-coil='{"loops":2,"step":60,"along":26,"across":46,"angle":-6}'
+        d="M10 120C120 120 220 50 510 70" />
+</svg>
+
+          <svg class="hero-portrait__sparkle" aria-hidden="true"><use href="#i-sparkle" /></svg>
+          <div class="hero-portrait__tag" aria-hidden="true">
+        <!-- The thin ring and the underline are SVG lines, so they stay sharp at any size -->
+          <svg class="hero-portrait__tag-ring" viewBox="0 0 220 140" fill="none" preserveAspectRatio="none">
+          <ellipse cx="110" cy="70" rx="106" ry="64" />
+          <line x1="46" y1="100" x2="172" y2="88" />
+          </svg>
+  <p class="hero-portrait__tag-text">Open<br>for work</p>
+</div>
+        </div>
+      </section>
+
+      <!-- ================= 2. INTRO (id="about" = the "About" nav link) ================= -->
+      <section id="about" class="intro" aria-labelledby="about-title">
+        <!-- ★ REPLACE THE SPLASH: save your own image as assets/blue-splash.png -->
+<img class="intro__splash" src="assets/Blue Ink Splatter Fade.png" alt="" aria-hidden="true" loading="lazy" />
+
+        <div class="intro__body reveal">
+          <p class="intro__hi">HI, I'M 👋</p>
+          <h2 id="about-title" class="intro__name">Hassan</h2>
+          <p class="intro__text">
+            I'm a <span class="u-blue">web developer</span> who builds clean, responsive websites,
+            fixes existing site issues, and creates <span class="u-blue">Python automations</span> that save time.
+          </p>
+
+          <p class="intro__follow-label">Follow Me</p>
+          <ul class="social-row" aria-label="Social links">
+            <!-- PLACEHOLDER URLs: replace "your-username" / the phone number with your real details -->
+            <li><a class="social-link social-link--dark" href="https://github.com/noor4-ai" target="_blank" rel="noopener noreferrer" aria-label="GitHub (opens in a new tab)"><svg aria-hidden="true"><use href="#i-github" /></svg></a></li>
+            <li><a class="social-link" href="https://www.linkedin.com/in/hassan-noor-043377428/?isSelfProfile=true" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in a new tab)"><svg aria-hidden="true"><use href="#i-linkedin" /></svg></a></li>
+            <li><a class="social-link" href="https://x.com/hassanb07pm" target="_blank" rel="noopener noreferrer" aria-label="X (opens in a new tab)"><svg aria-hidden="true"><use href="#i-x" /></svg></a></li>
+            
+          </ul>
+        </div>
+
+        <!-- Scalloped blue badge. data-scallop makes script.js give it a wavy edge. -->
+        <a class="badge reveal" data-scallop href="#contact" style="--reveal-delay:120ms">
+          <span>I'm<br>ready to talk</span>
+          <svg class="badge__icon" aria-hidden="true"><use href="#i-arrow" /></svg>
+        </a>
+      </section>
+
+      <!-- ================= 3. STATISTICS STRIP =================
+           HONEST LABELS: edit the numbers and labels freely. -->
+      <section class="stats" aria-label="Highlights">
+        <div class="stats__item reveal">
+          <p class="stats__value">1.9k</p>
+          <p class="stats__label">Featured Projects</p>
+        </div>
+        <div class="stats__item reveal" style="--reveal-delay:80ms">
+          <p class="stats__value">03</p>
+          <p class="stats__label">Core Services</p>
+        </div>
+        <div class="stats__item reveal" style="--reveal-delay:160ms">
+          <p class="stats__value">24/7</p>
+          <p class="stats__label">Automation Potential</p>
+        </div>
+      </section>
+
+      <!-- ================= 4. SERVICES ================= -->
+      <section id="services" class="services" aria-labelledby="services-title">
+        <!-- ★ REPLACE THE PICTURE: save your image as assets/services-splash.png (or reuse blue-splash.png) -->
+<img class="services__splash" src="assets/Blue Splatter Fade on White.png" alt="" aria-hidden="true" loading="lazy" />
+
+        <div class="section-head">
+          <h2 id="services-title" class="section-title">All Kind of Coding Solutions</h2>
+          <a class="btn btn--blue btn--sm" href="#contact">Start a Project
+            <svg class="btn__icon" aria-hidden="true"><use href="#i-arrow" /></svg>
+          </a>
+        </div>
+
+        <!-- GRID: 3 columns on desktop, 2 on tablet, 1 on phone (see style.css) -->
+        <div class="services__grid">
+
+          <article class="service-card service-card--primary reveal">
+            <svg class="service-card__icon" aria-hidden="true"><use href="#i-code" /></svg>
+            <h3 class="service-card__title">Website Development</h3>
+            <p class="service-card__desc">Modern, responsive websites designed around your goals and your brand.</p>
+            <ul class="service-card__list">
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Frontend Development</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>HTML, CSS &amp; JavaScript</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Responsive Web Design</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Personal Portfolio Websites</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Landing Page Development</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Tailwind CSS</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>UI Implementation</li>
+            </ul>
+            <!-- The arrow link is "stretched" over the whole card (see .circle-btn::after in CSS) -->
+            <a class="circle-btn" href="#contact" aria-label="Discuss Website Development"><svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+          </article>
+
+          <article class="service-card service-card--secondary reveal" style="--reveal-delay:80ms">
+            <svg class="service-card__icon" aria-hidden="true"><use href="#i-bug" /></svg>
+            <h3 class="service-card__title">Website Bug Fixes</h3>
+            <p class="service-card__desc">Fix existing website issues, repair broken layouts, and improve functionality.</p>
+            <ul class="service-card__list">
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>HTML/CSS Bug Fixes</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>JavaScript Debugging</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Responsive Layout Fixes</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Broken UI Repair</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Cross-Browser Issues</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Website Error Fixes</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>CSS Styling Problems</li>
+            </ul>
+            <a class="circle-btn" href="#contact" aria-label="Discuss Website Bug Fixes"><svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+          </article>
+
+          <article class="service-card service-card--pale reveal" style="--reveal-delay:160ms">
+            <svg class="service-card__icon" aria-hidden="true"><use href="#i-terminal" /></svg>
+            <h3 class="service-card__title">Python Automation</h3>
+            <p class="service-card__desc">Automate repetitive tasks and collect web data with practical Python scripts.</p>
+            <ul class="service-card__list">
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Python Scripting</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Task Automation</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Web Scraping</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Data Extraction</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>Data Cleaning</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>CSV and Excel Automation</li>
+              <li><svg aria-hidden="true"><use href="#i-check" /></svg>API Integration</li>
+            </ul>
+            <a class="circle-btn" href="#contact" aria-label="Discuss Python Automation"><svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ================= 5. PROJECTS (id="work" = the "Work" nav link) =================
+           HOW THE ALTERNATING LAYOUT WORKS:
+           Every row has the SAME HTML order: text first, image second.
+           Rows with the extra class "project--reverse" swap sides on desktop using the
+           CSS "order" property. On phones all rows stack: text, then image.
+
+           TO REPLACE A PROJECT IMAGE: put your file in /assets and change the src below.
+           The CSS crops it to 16:10 with object-fit: cover, so any size works
+           (about 1200 x 750 px is ideal). -->
+      <section id="work" class="work" aria-labelledby="work-title">
+        <div class="section-head section-head--band">
+          <h2 id="work-title" class="section-title">Explore My Top <br> Creations
+            <svg class="doodle-arrow" aria-hidden="true"><use href="#i-doodle-arrow" /></svg>
+          </h2>
+          <a class="btn btn--blue btn--sm" href="#contact">Hire Me
+            <svg class="btn__icon" aria-hidden="true"><use href="#i-arrow" /></svg>
+          </a>
+        </div>
+
+        <!-- PROJECT 1: text left, image right -->
+         <br><br>
+        <article class="project reveal">
+          <div class="project__info">
+            <p class="project__category">Web Development</p>
+            <div>
+              <h3 class="project__title">Nexa Digital — Agency Website</h3>
+              <p class="project__desc">A modern agency website featuring bold typography, responsive layouts, and polished interactions.</p>
+            </div>
+            <!-- PLACEHOLDER LINK: replace href="#" with your real project URL.
+                 Then also add target="_blank" rel="noopener noreferrer" and delete data-placeholder. -->
+            <a class="circle-btn" href="#" data-placeholder aria-label="View Nexa Digital project (link placeholder)"><svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+          </div>
+          <div class="project__media shot-1">
+            <img class="project__splash" src="assets/Blue watercolor splatter fading into white.png" alt="" aria-hidden="true" loading="lazy" />
+            <div class="project__frame">
+              <!-- Use the SAME URL as this project's arrow button -->
+              <a class="project__shot-link" href="#" data-placeholder target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
+              <!-- ★ REPLACE IMAGE 1 HERE -->
+              <img src="assets/nexa-digital.jpg" alt="Preview of the Nexa Digital agency website" width="1200" height="750" loading="lazy" data-fallback="Nexa Digital" />
+              </a>
+            </div>
+          </div>
+          
+        </article>
+       
+        <!-- PROJECT 2: image left, text right (project--reverse) -->
+        <article class="project project--reverse reveal">
+          <div class="project__info">
+            <p class="project__category">Python Automation</p>
+            <div>
+              <h3 class="project__title">Python Web Scraper</h3>
+              <p class="project__desc">A practical data extraction tool designed to collect and organize information from permitted web sources.</p>
+            </div>
+            <a class="circle-btn" href="#" data-placeholder aria-label="View Python Web Scraper project (link placeholder)"><svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+          </div>
+          <div class="project__media shot-2">
+            <img class="project__splash" src="assets/Blue watercolor splatter fading into white.png" alt="" aria-hidden="true" loading="lazy" />
+            <div class="project__frame">
+              <!-- Use the SAME URL as this project's arrow button -->
+              <a class="project__shot-link" href="#" data-placeholder target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
+              <!-- ★ REPLACE IMAGE 2 HERE -->
+              <img src="assets/python-web-scraper.jpg" alt="Preview of the Python web scraper project" width="1200" height="750" loading="lazy" data-fallback="Python Web Scraper" />
+              </a>
+            </div>
+          </div>
+          
+        </article>
+        
+
+        <!-- PROJECT 3: text left, image right again -->
+        <article class="project reveal">
+          <div class="project__info">
+            <p class="project__category">Frontend Development</p>
+            <div>
+              <h3 class="project__title">Responsive Web Interface</h3>
+              <p class="project__desc">A responsive website concept focused on clean layouts, accessible components, and consistent styling across devices.</p>
+            </div>
+            <a class="circle-btn" href="#" data-placeholder aria-label="View Responsive Web Interface project (link placeholder)"><svg aria-hidden="true"><use href="#i-arrow" /></svg></a>
+          </div>
+          <div class="project__media shot-3">
+            <img class="project__splash" src="assets/Blue watercolor splatter fading into white.png" alt="" aria-hidden="true" loading="lazy" />
+            <div class="project__frame">
+              <!-- Use the SAME URL as this project's arrow button -->
+              <a class="project__shot-link" href="#" data-placeholder target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
+              <!-- ★ REPLACE IMAGE 3 HERE -->
+              <img src="assets/responsive-web-interface.jpg" alt="Preview of the responsive web interface concept" width="1200" height="750" loading="lazy" data-fallback="Responsive Web Interface" />
+              </a>
+            </div>
+          </div>
+          
+        </article>
+      </section>
+
+      <!-- ================= 6. CLIENT FEEDBACK (blue) =================
+           PLACEHOLDER TESTIMONIALS: replace only with REAL feedback from real clients.
+           The section ends right after the two cards (no logo strip). -->
+      <section id="feedback" class="feedback on-blue" aria-labelledby="feedback-title">
+        <div class="grain grain--light feedback__grain" aria-hidden="true"></div>
+
+        <div class="section-head">
+          <h2 id="feedback-title" class="section-title">See My Client <br> Feedback
+            <svg class="doodle-arrow" aria-hidden="true"><use href="#i-doodle-arrow" /></svg>
+          </h2>
+          <a class="btn btn--white btn--sm" href="#contact">Let's Talk
+            <svg class="btn__icon" aria-hidden="true"><use href="#i-arrow" /></svg>
+          </a>
+        </div>
+
+        <div class="testimonials">
+          <figure class="testimonial reveal">
+            <svg class="testimonial__icon" aria-hidden="true"><use href="#i-quote" /></svg>
+            <blockquote class="testimonial__text"><p>Outstanding work! Transformed our brand with a polished website, seamless navigation, and a professional design. Highly recommended!</p></blockquote>
+            <figcaption class="testimonial__footer">
+              <span>
+                <strong class="testimonial__name">Alex Morgan</strong>
+                <small class="testimonial__role">Marketing Director, Nova Creative Studio</small>
+              </span>
+              <!-- AVATAR PLACEHOLDER: swap this span for <img class="avatar" src="assets/client-1.jpg" alt="Client Name" /> -->
+              <img class="avatar" src="assets/c1.jpg" alt="Alex Morgan" width="38" height="38" />
+            </figcaption>
+          </figure>
+
+          <figure class="testimonial reveal" style="--reveal-delay:100ms">
+            <svg class="testimonial__icon" aria-hidden="true"><use href="#i-quote" /></svg>
+            <blockquote class="testimonial__text"><p>Fast and reliable! Fixed our website bugs, restored broken layouts, and improved performance. Couldn't be happier!</p></blockquote>
+            <figcaption class="testimonial__footer">
+              <span>
+                <strong class="testimonial__name">Daniel Carter</strong>
+                <small class="testimonial__role">Operations Manager, BrightEdge Solutions</small>
+              </span>
+              <img class="avatar" src="assets/c2.png" alt="Daniel Carter" width="38" height="38" />
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ================= 7. ANYTHING IN MIND? LET'S TALK ================= -->
+      <section id="lets-talk" class="lets-talk reveal" aria-labelledby="lets-talk-title">
+        <h2 id="lets-talk-title" class="lets-talk__title">Anything in Mind?<br>Let's Talk</h2>
+
+        <div class="lets-talk__stage">
+          <!-- Left coil: tall loops, rising to the right -->
+          <svg class="doodle doodle--left" viewBox="0 0 160 150" aria-hidden="true" focusable="false">
+          <path pathLength="1"
+            data-coil='{"loops":3,"step":30,"along":13,"across":38,"angle":-25}'
+            d="M12 120C4 72 40 20 74 34C108 48 92 104 60 98C28 92 40 40 78 56C104 68 112 96 132 84" />
+            </svg>
+          
+
+          <!-- Centered black scalloped CTA badge -->
+          <a class="badge badge--dark badge--lg" data-scallop href="#contact">
+            <span>I'm<br>ready to talk</span>
+            <svg class="badge__icon" aria-hidden="true"><use href="#i-arrow" /></svg>
+          </a>
+
+          <!-- Right coil: wide overlapping loops, going down to the right -->
+          <svg class="doodle doodle--right" viewBox="0 0 200 130" aria-hidden="true" focusable="false">
+          <path pathLength="1"
+            data-coil='{"loops":3,"step":35,"along":20,"across":42,"angle":58}'
+            d="M6 44C38 8 124 28 112 72C102 106 48 98 60 66C70 40 122 52 152 32C172 18 190 38 196 56" />
+            </svg>
+        </div>
+      </section>
+
+      <!-- ================= 8. CONTACT (the ONE destination for every contact button) ================= -->
+      <section id="contact" class="contact" aria-labelledby="contact-title">
+        <!-- ★ REPLACE THE PICTURE: save your image as assets/contact-splash.png (or reuse blue-splash.png) -->
+<img class="contact__splash" src="assets/Blue Particle Wave on White.png" alt="" aria-hidden="true" loading="lazy" />
+
+        <div class="contact__intro reveal">
+          <p class="contact__brand"><span class="logo-square" aria-hidden="true">H</span><span class="wordmark">Hassan</span></p>
+          <h2 id="contact-title" class="contact__title">Today, improve your business with quality.</h2>
+          <p class="contact__text">
+            Have a website to build, a bug to fix, or a repetitive task to automate?
+            Tell me about your project and let's find the best way to solve it.
+          </p>
+          <ul class="contact__details">
+            <!-- PLACEHOLDERS: replace with your real email and city -->
+            <li>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=hassannoor4532@gmail.com&su=Project%20enquiry" target="_blank" rel="noopener noreferrer" aria-label="Email me"><svg aria-hidden="true"><use href="#i-mail" /></svg></a>
+            <a href="mailto:hassannoor4532@gmail.com">hassannoor4532@gmail.com</a>
+            </li>
+            <li>Multan, Pakistan.</li>
+          </ul>
+        </div>
+
+        <div class="contact__panel reveal" style="--reveal-delay:100ms">
+          <!-- SOCIAL ICONS. TO CHANGE THEM:
+               GitHub / LinkedIn / X : replace "your-username" with your real username.
+               WhatsApp: https://wa.me/<number> with the number in INTERNATIONAL format,
+               digits only, no "+", no spaces, no leading zeros. Example: +1 555 123 4567 → 15551234567. -->
+          <ul class="social-row" aria-label="Contact on social media">
+            <li><a class="social-link social-link--lg" href="https://wa.me/03176645419" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp (opens in a new tab)"><svg aria-hidden="true"><use href="#i-whatsapp" /></svg></a></li>
+            <li><a class="social-link social-link--lg" href="https://x.com/hassanb07pm" target="_blank" rel="noopener noreferrer" aria-label="X (opens in a new tab)"><svg aria-hidden="true"><use href="#i-x" /></svg></a></li>
+            <li><a class="social-link social-link--lg" href="https://www.linkedin.com/in/hassan-noor-043377428/?isSelfProfile=true" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in a new tab)"><svg aria-hidden="true"><use href="#i-linkedin" /></svg></a></li>
+            
+            <li><a class="social-link social-link--lg" href="https://github.com/noor4-ai" target="_blank" rel="noopener noreferrer" aria-label="GitHub (opens in a new tab)"><svg aria-hidden="true"><use href="#i-github" /></svg></a></li>
+            <li><a class="social-link social-link--lg" href="mailto:hassannoor4532@gmail.com" aria-label="Email me"><svg aria-hidden="true"><use href="#i-mail" /></svg></a></li>
+          </ul>
+
+          <!-- "novalidate" turns OFF the browser's own pop-up errors so our script can show nicer inline ones.
+               The required/type attributes stay as a backup and help screen readers. -->
+          <form id="contact-form" class="form" novalidate>
+            <div class="form__row">
+              <div class="field">
+                <label for="field-name">Name</label>
+                <input id="field-name" name="name" type="text" autocomplete="name" required aria-describedby="field-name-error" placeholder="Your name" />
+                <p class="field-error" id="field-name-error"></p>
+              </div>
+              <div class="field">
+                <label for="field-email">Email</label>
+                <input id="field-email" name="email" type="email" autocomplete="email" required aria-describedby="field-email-error" placeholder="you@example.com" />
+                <p class="field-error" id="field-email-error"></p>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="field-service">Service</label>
+              <select id="field-service" name="service" required aria-describedby="field-service-error">
+                <option value="" selected disabled>Choose a service</option>
+                <option>Website Development</option>
+                <option>Website Bug Fixes</option>
+                <option>Python Automation</option>
+                <option>Other</option>
+              </select>
+              <p class="field-error" id="field-service-error"></p>
+            </div>
+
+            <div class="field">
+              <label for="field-message">Message</label>
+              <textarea id="field-message" name="message" rows="5" required aria-describedby="field-message-error" placeholder="Tell me about your project…"></textarea>
+              <p class="field-error" id="field-message-error"></p>
+            </div>
+
+            <button id="submit-btn" class="btn btn--blue btn--lg" type="submit">Send Message
+              <svg class="btn__icon" aria-hidden="true"><use href="#i-arrow" /></svg>
+            </button>
+
+            <!-- Success / error message area. role="status" makes screen readers announce it. -->
+            <p id="form-status" class="form-status" role="status" aria-live="polite" hidden></p>
+          </form>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="site-footer">
+    <p>© <span id="year">2026</span> <span class="wordmark wordmark--sm">Hassan</span>. All rights reserved.</p>
+    <nav class="site-footer__nav text-muted" aria-label="Footer">
+      <a href="#home">Home</a>
+      <a href="#work">Work</a>
+      <a href="#contact">Contact</a>
+      <a href="#home">Back to top ↑</a>
+    </nav>
+  </footer>
+
+  <!-- "defer" = download now, run after the page is parsed, so every element exists when the script runs. -->
+  <script src="script.js" defer></script>
+</body>
+</html>

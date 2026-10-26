@@ -1,0 +1,749 @@
+/* ==========================================================================
+   style.css: Hassan portfolio
+   Tailwind (in the HTML) handles small helpers (flex, gap, show/hide per screen size).
+   This file handles the design: frame, hero portrait, cards, projects, forms.
+   RULE we follow: we never set "display" in this file on elements that already
+   use a Tailwind display class (hidden / md:flex / md:hidden), so they can't fight.
+
+   TABLE OF CONTENTS
+   0. HERO PORTRAIT CONFIG  ← edit this first
+   1. Design tokens        2. Base            3. Header
+   4. Buttons & small bits 5. Page frame      6. Hero + portrait
+   7. Intro                8. Stats           9. Services
+   10. Projects           11. Feedback       12. Let's Talk
+   13. Contact + form     14. Footer         15. Scroll reveal
+   16. Reduced motion
+   ========================================================================== */
+
+
+/* ==========================================================================
+   0. HERO PORTRAIT CONFIG  (the only place you need to touch to re-position your photo)
+
+   HOW TO REPLACE THE IMAGE
+     Save your transparent PNG as  assets/hassan-portrait.png  (same name = no code changes).
+
+   HOW TO ADJUST IT  (change a number, save, refresh)
+     --portrait-width / --portrait-height  size of the whole composition box
+     --portrait-right                      horizontal position (bigger = further LEFT)
+     --portrait-bottom                     vertical position. Negative = hangs below the
+                                           hero and overlaps the next section, like the reference
+     --portrait-image-scale                zoom your photo (1 = normal, 1.1 = 10% bigger)
+     --portrait-card-width/height/rotate   the dark rectangle behind the person
+     --portrait-curve-size                 size of the blue hand-drawn curves
+
+   RESPONSIVE POSITIONING: the smaller-screen values are right below (media queries).
+   ========================================================================== */
+:root {
+  --portrait-fade-start: 78%;   /* where the fade begins (lower number = longer fade) */
+  --portrait-card-fade-start: 50%;   /* where the card's fade begins */
+  --portrait-src: url("assets/portrait\ 02.png");  /* must be the SAME file as the <img> in index.html */
+  --portrait-width: 380px;
+  --portrait-height: 540px;
+  --portrait-right: 5%;
+  --portrait-bottom: -150px;
+  --portrait-image-scale: 1.2;
+  --portrait-card-width: 74%;
+  --portrait-card-height: 74%;
+  --portrait-card-rotate: 8deg;
+  --portrait-curve-size: 135%;
+  /* in the config at the top */
+--arc-x: 0px;   /* move the whole arc: negative = left, positive = right */
+--arc-y: 0px;   /* negative = up, positive = down */
+--splash-width: 70%;      /* size of the splash, as a % of the section width */
+--splash-opacity: 1;      /* 0.5 = half strength */
+--splash-bottom: -30%;    /* negative = pushed below the bottom edge, so only the top part shows */
+  
+}
+/* Tablet / small laptop */
+@media (max-width: 1100px) {
+  :root { --portrait-width: 320px; --portrait-height: 470px; --portrait-bottom: -120px; }
+}
+/* Phone + small tablet: the portrait moves BELOW the headline instead of floating beside it */
+@media (max-width: 820px) {
+  :root {
+    --portrait-width: 300px; --portrait-height: 400px;
+    --portrait-right: 0px;   --portrait-bottom: 0px;
+    --portrait-curve-size: 140%;
+  }
+}
+
+
+/* ==========================================================================
+   1. DESIGN TOKENS: change colors and fonts in ONE place
+   ========================================================================== */
+:root {
+  --white: #FFFFFF;
+  --ink: #090909;
+  --blue: #2F5BFF;
+  --pale: #E9EEFF;
+  --blue-2: #C7D7F5;
+  --border: #D5D5D5;
+  --muted: #666666;
+
+  --font-sans: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-script: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+
+  --header-h: 64px;                    /* used to offset anchor links under the sticky header */
+  --pad-x: clamp(20px, 4vw, 40px);     /* horizontal padding inside the frame */
+}
+
+
+/* ==========================================================================
+   2. BASE
+   ========================================================================== */
+html { scroll-behavior: smooth; }                  /* smooth scrolling for every #link */
+[id] { scroll-margin-top: calc(var(--header-h) + 8px); }  /* sticky header never covers a section title */
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Visible keyboard focus everywhere (accessibility) */
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.on-blue :focus-visible { outline-color: #fff; }
+
+.skip-link {
+  position: absolute; left: 1rem; top: -4rem; z-index: 100;
+  background: var(--blue); color: #fff; padding: .6rem 1rem; border-radius: .4rem;
+}
+.skip-link:focus { top: .75rem; }
+
+.u-blue {
+  color: var(--blue);
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px;
+}
+
+.wordmark {
+  font-family: var(--font-script); font-style: italic;
+  font-size: 1.9rem; line-height: 1; letter-spacing: -.01em;
+}
+.wordmark--sm { font-size: 1.2rem; }
+
+
+/* ==========================================================================
+   3. HEADER
+   Desktop: 3 columns  [wordmark] [centered nav] [actions]
+   ========================================================================== */
+.site-header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255, 255, 255, .92);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border-bottom: 1px solid transparent;
+  transition: border-color .25s ease;
+}
+.site-header.is-scrolled { border-bottom-color: var(--border); }   /* class added by script.js */
+
+.site-header__inner {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  height: var(--header-h); max-width: 1280px; margin: 0 auto;
+  padding: 0 clamp(12px, 2vw, 28px);
+}
+@media (max-width: 767px) {
+  .site-header__inner { grid-template-columns: 1fr auto; }   /* the middle nav is hidden on phones */
+}
+
+.main-nav__link {
+  padding: .35rem 1rem; border: 1px solid transparent; border-radius: 999px;
+  font-size: .82rem; color: var(--ink);
+  transition: color .2s ease, border-color .2s ease;
+}
+.main-nav__link:hover { color: var(--blue); }
+/* ACTIVE link = small blue outlined pill (aria-current is set by script.js) */
+[data-nav][aria-current="true"] { border-color: var(--blue); color: var(--blue); }
+
+/* Hamburger button */
+.menu-toggle { width: 2.4rem; height: 2.4rem; border: 1px solid var(--border); border-radius: .5rem; }
+.menu-toggle svg { width: 1.25rem; height: 1.25rem; }
+.icon-close { display: none; }
+[aria-expanded="true"] .icon-open { display: none; }       /* swap icons using the ARIA state, no extra JS */
+[aria-expanded="true"] .icon-close { display: block; }
+
+.mobile-menu { padding: 8px clamp(12px, 2vw, 28px) 20px; border-top: 1px solid var(--border); background: #fff; }
+.mobile-menu a { display: block; padding: 14px 4px; border-bottom: 1px solid var(--border); font-size: 1.05rem; }
+.mobile-menu a[aria-current="true"] { color: var(--blue); border-color: var(--border); }
+@media (min-width: 768px) { .mobile-menu { display: none !important; } }
+
+
+/* ==========================================================================
+   4. BUTTONS & SMALL COMPONENTS
+   Hover effects are pure CSS "transition": the browser animates between the
+   normal style and the :hover style over the given time.
+   ========================================================================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  padding: .7rem 1.1rem; border: 1px solid transparent; border-radius: 4px;
+  font-size: .85rem; font-weight: 500; line-height: 1; white-space: nowrap;
+  transition: transform .2s ease, background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+.btn--sm { padding: .55rem .9rem; font-size: .78rem; }
+.btn--lg { padding: 1rem 1.6rem; font-size: .95rem; }
+.btn__icon { width: .9rem; height: .9rem; transition: transform .2s ease; }
+.btn:hover { transform: translateY(-2px); }
+.btn:hover .btn__icon { transform: translate(2px, -2px); }     /* arrow nudges up-right */
+
+.btn--blue { background: var(--blue); color: #fff; }
+.btn--blue:hover { background: #1f45db; }
+.btn--outline { border-color: var(--ink); background: transparent; color: var(--ink); }
+.btn--outline:hover { background: var(--ink); color: #fff; }
+.btn--white { background: #fff; color: var(--blue); }
+.btn--white:hover { background: var(--pale); }
+
+/* Round arrow button used on cards and projects */
+.circle-btn {
+  position: relative; display: inline-grid; place-items: center;
+  width: 36px; height: 36px; border: 1px solid currentColor; border-radius: 50%;
+  transition: background-color .25s ease, color .25s ease, border-color .25s ease, transform .25s ease;
+}
+.circle-btn svg { width: 14px; height: 14px; }
+.circle-btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); transform: translate(2px, -2px); }
+
+/* Social icon circles */
+.social-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.social-link {
+  display: inline-grid; place-items: center; width: 34px; height: 34px;
+  border: 1px solid var(--border); border-radius: 50%; color: var(--ink);
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+}
+.social-link svg { width: 15px; height: 15px; }
+.social-link:hover { background: var(--blue); border-color: var(--blue); color: #fff; transform: translateY(-2px); }
+.social-link--dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+.social-link--lg { width: 52px; height: 52px; }
+.social-link--lg svg { width: 22px; height: 22px; }
+
+/* Scalloped (wavy-edged) badge. It is a plain circle by default.
+   script.js adds a wavy clip-path to anything with [data-scallop]. */
+.badge {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .35rem;
+  width: clamp(104px, 12vw, 128px); aspect-ratio: 1; border-radius: 50%;
+  background: var(--blue); color: #fff; text-align: center;
+  font-size: .7rem; line-height: 1.35; text-transform: uppercase; letter-spacing: .03em;
+  transition: transform .35s ease, rotate .45s ease;
+}
+.badge:hover { rotate: 12deg; transform: scale(1.04); }
+.badge__icon { width: .95rem; height: .95rem; }
+.badge--dark { background: var(--ink); }
+.badge--lg { width: clamp(112px, 16vw, 150px); font-size: .76rem; }
+
+/* Blue dotted "grain" texture. A few layers of tiny dots, faded out with a mask. */
+.grain {
+  position: absolute; pointer-events: none;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(47, 91, 255, .6) .9px, transparent 1.3px),
+    radial-gradient(circle at 3px 2px, rgba(47, 91, 255, .35) .8px, transparent 1.2px);
+  background-size: 3px 3px, 5px 5px;
+}
+.grain--light {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, .5) .9px, transparent 1.3px),
+    radial-gradient(circle at 3px 2px, rgba(255, 255, 255, .3) .8px, transparent 1.2px);
+}
+
+/* Section headings */
+.section-head {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: clamp(28px, 4vw, 44px) var(--pad-x) 0;
+}
+.section-head--band { padding-bottom: clamp(24px, 3vw, 36px); border-bottom: 1px solid var(--border); }
+.section-title {
+  font-size: clamp(1.9rem, 4vw, 2.9rem); font-weight: 400; line-height: 1.15; letter-spacing: -.02em;
+}
+.doodle-arrow { display: inline-block; width: 6rem; height: 5rem; margin-left: .5rem; margin-top: .2rem; vertical-align: middle; color: var(--black); }
+.feedback .doodle-arrow { color: #fff; }
+
+/* Only the "Explore My Top Creations" heading */
+.section-head--band { padding-bottom: 12px; }        /* was clamp(24px, 3vw, 36px); use 0 to remove it */
+.section-head--band .doodle-arrow { height: 5rem; margin-top: 0; }
+@media (max-width: 560px) { .section-head { flex-wrap: wrap; } }
+
+
+/* ==========================================================================
+   5. PAGE FRAME
+   Thin outer border + a divider under every section. This is the reference's "boxed" look.
+   ========================================================================== */
+.page-wrap { padding: 0 clamp(12px, 2vw, 28px); }
+.page {
+  max-width: 1280px; margin: 12px auto 0;
+  border: 1px solid var(--border);
+  overflow-x: clip;               /* decorative curves can never create a horizontal scrollbar */
+}
+.page > section { position: relative; border-bottom: 1px solid var(--border); }
+.page > section:last-child { border-bottom: 0; }
+
+
+/* ==========================================================================
+   6. HERO + PORTRAIT
+   The portrait is positioned with "position:absolute" inside the hero.
+   Position values come from the config variables at the top of this file.
+   ========================================================================== */
+.hero {
+  position: relative; z-index: 2;      /* above the intro section so the photo can overlap it */
+  padding: clamp(32px, 5vw, 56px) var(--pad-x) clamp(36px, 5vw, 56px);
+  min-height: clamp(420px, 46vw, 560px);
+}
+
+.hero__grain {
+  top: 0; right: 0; width: 62%; height: 100%; z-index: 0;
+  -webkit-mask-image: radial-gradient(ellipse at 70% 40%, #000 0%, transparent 70%);
+          mask-image: radial-gradient(ellipse at 70% 40%, #000 0%, transparent 70%);
+}
+.hero__text { position: relative; z-index: 1; }
+
+.hero__title {
+  font-size: clamp(3.3rem, 9vw, 6.6rem);   /* clamp(min, fluid, max): grows with the screen, never too small/big */
+  font-weight: 500; line-height: 1; letter-spacing: -.04em;
+}
+.hero__line { display: block; }
+.hero__line--blue { color: var(--blue); }
+.hero__sparkle { display: inline-block; width: .3em; height: .3em; margin-left: .15em; vertical-align: middle; color: var(--blue); }
+.hero .btn { margin-top: clamp(24px, 4vw, 36px); }
+
+/* --- Portrait component --- */
+.hero-portrait {
+  position: absolute; z-index: 3; pointer-events: none;
+  right: var(--portrait-right); bottom: var(--portrait-bottom);
+  width: var(--portrait-width); height: var(--portrait-height);
+}
+.hero__paint { position: absolute; top: 0; right: 0; width: 70%; height: 100%; object-fit: cover; object-position: right; z-index: 0; pointer-events: none; opacity: .8; }
+.hero-portrait__back-card {
+  position: absolute; right: 0; bottom: 8%;
+  width: var(--portrait-card-width); height: var(--portrait-card-height);
+  background: #0E1631; border-radius: 14px;
+  rotate: var(--portrait-card-rotate);     /* the individual "rotate" property: easy to tweak */
+  /* Fade the card out toward its bottom edge */
+  -webkit-mask-image: linear-gradient(to bottom, #000 var(--portrait-card-fade-start), transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 var(--portrait-card-fade-start), transparent 100%);
+}
+/* This box is the same size and position as your photo. Its mask is your photo's own
+   shape, subtracted from a solid fill, so the card shows only where the photo is NOT. */
+.hero-portrait__card-mask {
+  position: absolute; inset: 0;
+  scale: var(--portrait-image-scale); transform-origin: center bottom;   /* same zoom as the photo */
+
+  -webkit-mask-image: linear-gradient(#000, #000), var(--portrait-src);
+  -webkit-mask-composite: source-out;
+  -webkit-mask-size: 100% 100%, contain;
+  -webkit-mask-position: 0 0, center bottom;
+  -webkit-mask-repeat: no-repeat;
+
+          mask-image: linear-gradient(#000, #000), var(--portrait-src);
+          mask-composite: subtract;
+          mask-size: 100% 100%, contain;          /* "contain" + "center bottom" = same as the photo's object-fit */
+          mask-position: 0 0, center bottom;
+          mask-repeat: no-repeat;
+}
+
+/* Cancels the zoom above for the card itself, so only the mask follows the photo's scale */
+.hero-portrait__card-unscale {
+  position: absolute; inset: 0;
+  scale: calc(1 / var(--portrait-image-scale)); transform-origin: center bottom;
+}
+.hero-portrait__image {
+  position: absolute; left: 50%; bottom: 0; width: 100%; height: 100%;
+  object-fit: contain; object-position: center bottom;   /* keeps the whole person visible */
+  translate: -50% 0; scale: var(--portrait-image-scale); transform-origin: center bottom;
+  /* Fade the bottom edge: fully visible down to the start point, then transparent at the very bottom */
+  -webkit-mask-image: linear-gradient(to bottom, #000 var(--portrait-fade-start), transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 var(--portrait-fade-start), transparent 100%);
+}
+.hero-portrait__decorations {
+  position: absolute; left: 50%; top: 50%;
+  width: var(--portrait-curve-size); aspect-ratio: 520 / 560; height: auto;
+  translate: -50% -48%; overflow: visible;
+}
+.hero-portrait__sparkle { position: absolute; right: 10%; top: 24%; width: 26px; height: 26px; color: var(--blue); }
+.hero-portrait__arch {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  overflow: visible; pointer-events: none;
+}
+.arc-shift { translate: var(--arc-x) var(--arc-y); }   /* both pieces share this, so they always stay joined */
+.hero-portrait__arch path {
+  fill: none; stroke: var(--blue); stroke-width: 1.5; stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.hero-portrait__loops {
+  position: absolute; z-index: 0;
+  left: -25%; bottom: -10%; width: 150%; height: auto; aspect-ratio: 520 / 170;
+  overflow: visible; pointer-events: none;
+}
+.hero-portrait__ring ellipse,
+.hero-portrait__loops path {
+  fill: none; stroke: var(--blue); stroke-width: 1.5; stroke-linecap: round;
+  vector-effect: non-scaling-stroke;     /* same line thickness at every size */
+}
+.hero-portrait__tag {
+  position: absolute; left: -20%; top: 5%;     /* move it with left/top */
+  width: 185px; aspect-ratio: 220 / 140;      /* size of the ring */
+  rotate: -15deg;                             /* tilt, like the reference */
+  display: grid; place-items: center;
+  
+}
+.hero-portrait__tag-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;}
+.hero-portrait__tag-ring ellipse,
+.hero-portrait__tag-ring line { stroke: var(--ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.hero-portrait__tag-text {
+  position: relative; margin-bottom: .5rem;
+  font-size: .78rem; line-height: 1.35; letter-spacing: .04em;
+  text-transform: uppercase; text-align: left;
+}
+
+@media (max-width: 820px) {
+  .hero { min-height: 0; }
+  .hero-portrait { position: relative; right: auto; bottom: auto; margin: 36px auto 0; max-width: 100%; }
+  .hero__grain { width: 100%; }
+}
+
+
+/* ==========================================================================
+   7. INTRO ("HI, I'M Hassan")
+   ========================================================================== */
+.intro {
+  z-index: 1;                          /* lower than .hero so the portrait overlaps this section */
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end;
+  padding: clamp(40px, 6vw, 64px) var(--pad-x) clamp(32px, 4vw, 48px);
+}
+.intro { overflow: hidden; }   /* the splash is cut cleanly at the section's bottom divider */
+
+.intro__splash {
+  position: absolute; z-index: 0;
+  left: 50%; bottom: var(--splash-bottom);
+  width: var(--splash-width); height: auto;
+  translate: -50% 0;                    /* centres it horizontally */
+  opacity: var(--splash-opacity);
+  mix-blend-mode: multiply;             /* hides a white background; harmless on a transparent PNG */
+  pointer-events: none;
+}
+
+@media (max-width: 820px) { :root { --splash-width: 110%; } }
+.intro__body { position: relative; max-width: min(640px, 58%); }
+.intro__hi { font-size: 1.35rem; color: #8a8a8a; }
+.intro__name { margin-top: .15rem; font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 500; line-height: 1.05; letter-spacing: -.03em; }
+.intro__text { margin-top: 1.4rem; font-size: clamp(1.1rem, 2vw, 1.55rem); line-height: 1.5; color: #555; }
+.intro__follow-label { margin-top: 2rem; margin-bottom: .6rem; font-size: .72rem; font-weight: 500; }
+
+@media (max-width: 820px) {
+  .intro { grid-template-columns: 1fr; align-items: start; }
+  .intro__body { max-width: 100%; }
+  .intro .badge { justify-self: end; }
+}
+
+
+/* ==========================================================================
+   8. STATS
+   ========================================================================== */
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.stats__item { padding: clamp(26px, 4vw, 44px) 10px; text-align: center; }
+.stats__item + .stats__item { border-left: 1px solid var(--border); }
+.stats__value { font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 300; line-height: 1.1; letter-spacing: -.02em; }
+.stats__label { margin-top: .3rem; font-size: clamp(.7rem, 1.6vw, .85rem); color: var(--muted); }
+
+
+/* ==========================================================================
+   9. SERVICES
+   ========================================================================== */
+.services { overflow: hidden; --services-splash-left: -5%; --services-splash-width: 70%; --services-splash-opacity: .8; }
+.services__splash {
+  position: absolute; z-index: 0;
+  left: var(--services-splash-left, 0%);
+  bottom: var(--services-splash-bottom, -15%);
+  width: var(--services-splash-width, 45%); height: auto;
+  opacity: var(--services-splash-opacity, 1);
+  mix-blend-mode: multiply;      /* hides a white background; harmless on a transparent PNG */
+  pointer-events: none;
+}
+@media (max-width: 820px) { .services { --services-splash-width: 90%; } }
+/* GRID: 3 equal columns. minmax(0,1fr) lets columns shrink instead of overflowing. */
+.services__grid {
+  position: relative; display: grid; gap: 20px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: clamp(24px, 3vw, 36px) var(--pad-x) clamp(36px, 5vw, 56px);
+}
+@media (max-width: 1023px) {
+  .services__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .services__grid > :last-child { grid-column: span 2; }
+}
+@media (max-width: 639px) {
+  .services__grid { grid-template-columns: minmax(0, 1fr); }
+  .services__grid > :last-child { grid-column: auto; }
+}
+
+.service-card {
+  position: relative; display: flex; flex-direction: column;
+  padding: 28px; border-radius: 18px; background: var(--pale);
+  transition: transform .3s ease, background-color .3s ease, box-shadow .3s ease;
+}
+.service-card:hover { transform: translateY(-6px); box-shadow: 0 16px 30px -18px rgba(47, 91, 255, .55); }
+.service-card--primary { background: var(--blue); color: #fff; }
+.service-card--primary:hover { background: #2450ea; }
+.service-card--secondary { background: var(--blue-2); }
+.service-card--secondary:hover { background: #b9cdf2; }
+.service-card--pale:hover { background: #dce5ff; }
+
+.service-card__icon { width: 40px; height: 40px; margin-bottom: 26px; color: var(--blue); }
+.service-card--primary .service-card__icon { color: #fff; }
+.service-card__title { font-size: 1.35rem; font-weight: 500; line-height: 1.25; }
+.service-card__desc { margin-top: .6rem; font-size: .9rem; line-height: 1.5; opacity: .75; }
+.service-card__list { display: grid; gap: .5rem; margin: 22px 0 28px; font-size: .85rem; }
+.service-card__list li { display: flex; align-items: flex-start; gap: .55rem; }
+.service-card__list svg { flex: none; width: 14px; height: 14px; margin-top: .22em; color: var(--blue); }
+.service-card--primary .service-card__list svg { color: #fff; }
+
+/* STRETCHED LINK: the arrow link's ::after covers the whole card, so the entire card is clickable.
+   (position:static lets the ::after use the CARD as its positioning parent.) */
+.service-card .circle-btn { position: static; margin-top: auto; align-self: flex-end; }
+.service-card .circle-btn::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.service-card:hover .circle-btn { background: var(--ink); color: #fff; border-color: var(--ink); }
+.service-card--primary:hover .circle-btn { background: #fff; color: var(--blue); border-color: #fff; }
+
+
+/* ==========================================================================
+   10. PROJECTS: alternating layout
+   Each row is a 2-column grid. ".project--reverse" swaps the columns with "order".
+   ========================================================================== */
+.project { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-bottom: 1px solid var(--border); }
+.project:last-child { border-bottom: 0; }
+
+.project + .project { margin-top: 40px; margin-bottom: 40px;}   /* gap between project rows; change 40px to taste */
+
+.project__info {
+  display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 28px;
+  padding: clamp(28px, 4vw, 48px) var(--pad-x);
+}
+.project__category { font-size: .8rem; color: #8a8a8a; }
+.project__title { font-size: clamp(1.7rem, 3.2vw, 2.4rem); font-weight: 500; line-height: 1.2; letter-spacing: -.02em; }
+.project__desc { margin-top: .8rem; max-width: 30em; font-size: .92rem; line-height: 1.6; color: var(--muted); }
+
+.project--reverse .project__info { order: 2; }     /* text goes to the right column... */
+.project--reverse .project__media { order: 1; }    /* ...image goes to the left column */
+
+
+.project__splash {
+  position: absolute; z-index: 1;                       /* 1 = on top of the screenshot's corner; 0 = behind it */
+  left: var(--splash-left, auto);
+  right: var(--splash-right, auto);
+  bottom: var(--splash-bottom, -15%);
+  width: var(--splash-size, 55%); height: auto;
+  opacity: var(--splash-fade, 1);
+  mix-blend-mode: multiply;                             /* hides a white background; harmless on a transparent PNG */
+  pointer-events: none;
+}
+/* ==========================================================================
+   PROJECT SHOT POSITIONS
+   The panel is a fixed-size box. The screenshot (".project__frame") is placed
+   inside it with "position:absolute", so you can move, resize, tilt and crop it freely.
+   All the numbers live in the variables below. Each shot-N class sets its own.
+   ========================================================================== */
+.project__media {
+  position: relative; overflow: hidden;
+  aspect-ratio: var(--panel-ratio, 16 / 11);     /* shape of the panel */
+  background: var(--panel-bg, #F3F6FF);
+  margin-bottom: 40px;
+  margin-inline-start: 40px;
+  margin-inline-end: 40px;
+}
+
+.project__frame {
+  position: absolute;
+  left: var(--shot-x, 50%);                      /* horizontal centre of the shot inside the panel */
+  top: var(--shot-y, 50%);                       /* vertical centre */
+  width: var(--shot-width, 80%);                 /* size, as a % of the panel width (can be over 100%) */
+  aspect-ratio: var(--shot-ratio, 16 / 10);      /* shape of the shot */
+  translate: -50% -50%;                          /* makes left/top refer to the shot's CENTRE */
+  rotate: var(--shot-rotate, 0deg);              /* tilt */
+  scale: var(--shot-scale, 1);                   /* zoom */
+  border-radius: var(--shot-radius, 6px);
+  overflow: hidden;
+}
+
+.project__shot-link { display: block; width: 100%; height: 100%; cursor: pointer; }
+
+.project__frame img {
+  width: 100%; height: 100%;
+  object-fit: var(--shot-fit, cover);            /* cover = fill and crop, contain = show everything */
+  object-position: var(--shot-focus, center);    /* which part of the image stays visible when cropped */
+  transition: transform .6s ease;
+}
+.project:hover .project__frame img { transform: scale(1.04); }
+
+/* --- Project 1: big tilted shot that bleeds off the panel, like the reference --- */
+.shot-1 {
+  --shot-x: 60%; --shot-y: 56%;
+  --shot-width: 104%; --shot-rotate: -12deg; --shot-radius: 0px;
+  --splash-right: 20%;  --splash-bottom: 0%; --splash-size: 90% ;
+}
+
+/* --- Project 2: a smaller shot sitting inside the panel with space around it --- */
+.shot-2 {
+  --shot-x: 50%; --shot-y: 52%;
+  --shot-width: 85%; --shot-radius: 4px;
+  --splash-right: 0%;  --splash-bottom: 0%; --splash-size: 100%;
+}
+
+/* --- Project 3: the shot fills the whole panel  --- */
+.shot-3 {
+    --shot-x: 50%; --shot-y: 50%;
+  --shot-width: 100%; --shot-ratio: 16 / 11; --shot-radius: 0px;
+  --splash-right: 0%;  --splash-bottom: 0%; --splash-size: 100%;
+  
+}
+
+@media (max-width: 767px) {
+  .project { grid-template-columns: minmax(0, 1fr); }
+  .project--reverse .project__info, .project--reverse .project__media { order: 0; }   /* always text, then image */
+  .project__info { gap: 20px; }
+}
+
+
+/* ==========================================================================
+   11. CLIENT FEEDBACK
+   ========================================================================== */
+.feedback { overflow: hidden; background: var(--blue); color: #fff; }
+.feedback__grain {
+  top: 0; right: 0; width: 60%; height: 60%;
+  -webkit-mask-image: radial-gradient(ellipse at 100% 0%, #000 0%, transparent 70%);
+          mask-image: radial-gradient(ellipse at 100% 0%, #000 0%, transparent 70%);
+}
+.testimonials {
+  position: relative; display: grid; gap: 20px; grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: clamp(24px, 3vw, 36px) var(--pad-x) clamp(36px, 5vw, 56px);   /* section ends right after the cards */
+}
+.testimonial {
+  display: flex; flex-direction: column; gap: 18px; padding: 28px; border-radius: 18px;
+  background: rgba(255, 255, 255, .12);
+  transition: background-color .3s ease, transform .3s ease;
+}
+.testimonial:hover { background: rgba(255, 255, 255, .18); transform: translateY(-4px); }
+.testimonial__icon { width: 36px; height: 36px; }
+.testimonial__text { font-size: 1.5rem; line-height: 1.6; opacity: .92; }
+.testimonial__footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 12px; }
+.testimonial__name { display: block; font-size: .85rem; font-weight: 500; }
+.testimonial__role { display: block; font-size: .72rem; opacity: .65; }
+.avatar {
+  display: grid; place-items: center; flex: none; width: 38px; height: 38px;
+  border-radius: 50%; overflow: hidden; object-fit: cover; background: rgba(255, 255, 255, .25);
+}
+.avatar svg { width: 20px; height: 20px; }
+@media (max-width: 767px) { .testimonials { grid-template-columns: minmax(0, 1fr); } }
+
+
+/* ==========================================================================
+   12. ANYTHING IN MIND? LET'S TALK
+   The two loops are separate SVGs positioned on each side of the badge.
+   ========================================================================== */
+.lets-talk { padding: clamp(56px, 9vw, 110px) var(--pad-x) clamp(64px, 9vw, 120px); text-align: center; }
+.lets-talk__title { font-size: clamp(2.2rem, 6vw, 4.2rem); font-weight: 600; line-height: 1.1; letter-spacing: -.03em; }
+.lets-talk__stage { position: relative; display: flex; align-items: center; justify-content: center; margin-top: clamp(28px, 4vw, 44px); min-height: 150px; }
+.doodle { position: absolute; top: 50%; translate: 0 -50%; width: clamp(70px, 22vw, 240px); color: var(--blue); pointer-events: none; }
+.doodle--left { left: clamp(0px, 5vw, 90px); }
+.doodle--right { right: clamp(0px, 5vw, 90px); }
+.doodle path {
+  fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 0;        /* pathLength="1" in the HTML makes "1" = the whole line */
+  transition: stroke-dashoffset 1.6s ease .3s;
+}
+/* Before the section is revealed the line is "undrawn"; afterwards it draws itself */
+.js-ready .reveal:not(.is-visible) .doodle path { stroke-dashoffset: 1; }
+.lets-talk .badge { position: relative; z-index: 1; }
+
+
+/* ==========================================================================
+   13. CONTACT + FORM
+   ========================================================================== */
+.contact {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(32px, 6vw, 80px);
+  padding: clamp(40px, 6vw, 72px) var(--pad-x) clamp(56px, 7vw, 88px);
+}
+.contact { overflow: hidden; --contact-splash-width: 70%; --contact-splash-bottom: -10%; --contact-splash-opacity: .8; }    /* add this to your existing .contact rule if you prefer: the picture is cut cleanly at the section's edge */
+
+.contact__splash {
+  position: absolute; z-index: 0;
+  left: var(--contact-splash-left, 0);
+  bottom: var(--contact-splash-bottom, 0);
+  width: var(--contact-splash-width, 60%); height: auto;
+  opacity: var(--contact-splash-opacity, 1);
+  mix-blend-mode: multiply;       /* hides a white background; harmless on a transparent PNG */
+  pointer-events: none;
+}
+@media (max-width: 900px) { .contact { --contact-splash-width: 100%; } }
+.contact__intro, .contact__panel { position: relative; }
+.contact__brand { display: flex; align-items: center; gap: .6rem; }
+.logo-square { display: grid; place-items: center; width: 26px; height: 26px; background: var(--ink); color: #fff; font-size: .8rem; font-weight: 600; }
+.contact__title { max-width: 11em; margin-top: 28px; font-size: clamp(2rem, 4vw, 3rem); font-weight: 500; line-height: 1.15; letter-spacing: -.02em; }
+.contact__text { max-width: 30em; margin-top: 1.1rem; line-height: 1.6; color: var(--muted); }
+.contact__details { display: grid; gap: .6rem; margin-top: 1.6rem; font-size: .9rem; color: var(--muted); }
+.contact__details li { display: flex; align-items: center; gap: .55rem; }
+.contact__details svg { width: 18px; height: 18px; color: var(--blue); }
+.contact__details a:hover { color: var(--blue); }
+.contact .social-row { margin-bottom: 28px; }
+
+.form { display: grid; gap: 18px; }
+.form__row { display: grid; gap: 18px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.field label { display: block; margin-bottom: .4rem; font-size: .8rem; font-weight: 500; }
+.field input, .field select, .field textarea {
+  width: 100%; padding: .85rem 1rem; border: 1px solid var(--border); border-radius: 8px;
+  background: #fff; font: inherit; font-size: .95rem; color: var(--ink);
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.field textarea { resize: vertical; min-height: 130px; }
+.field input:hover, .field select:hover, .field textarea:hover { border-color: #a9b8e8; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(47, 91, 255, .18); }
+.field [aria-invalid="true"] { border-color: #d93025; }
+.field-error { min-height: 0; margin-top: .35rem; font-size: .78rem; color: #d93025; }
+.field-error:empty { display: none; }
+
+.form .btn--lg { justify-self: start; }
+.form-status { padding: .9rem 1rem; border-radius: 8px; font-size: .9rem; line-height: 1.5; }
+.form-status--success { background: var(--pale); color: #1b3bb3; border: 1px solid var(--blue-2); }
+.form-status--error { background: #fdecea; color: #a1241b; border: 1px solid #f5c2bd; }
+#submit-btn[disabled] { opacity: .7; cursor: progress; transform: none; }
+
+@media (max-width: 900px) { .contact { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) {
+  .form__row { grid-template-columns: minmax(0, 1fr); }
+  .form .btn--lg { justify-self: stretch; }
+}
+
+
+/* ==========================================================================
+   14. FOOTER
+   ========================================================================== */
+.site-footer {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+  max-width: 1280px; margin: 0 auto; padding: 18px clamp(12px, 2vw, 28px) 28px;
+  font-size: .78rem; color: var(--muted);
+}
+.site-footer__nav { display: flex; flex-wrap: wrap; gap: 18px; }
+.site-footer a:hover { color: var(--blue); }
+
+
+/* ==========================================================================
+   15. SCROLL REVEAL
+   Elements are only hidden when <html> has the class "js-ready" (added by script.js).
+   If JavaScript fails to load, everything simply stays visible.
+   Reveal uses the separate "translate" property, hover uses "transform",
+   so the two effects never overwrite each other.
+   ========================================================================== */
+.reveal { transition-property: opacity, translate, transform, background-color, box-shadow, color, border-color; }
+.js-ready .reveal { transition-duration: .7s, .7s, .3s, .3s, .3s, .3s, .3s; transition-delay: var(--reveal-delay, 0ms), var(--reveal-delay, 0ms), 0ms, 0ms, 0ms, 0ms, 0ms; }
+.js-ready .reveal:not(.is-visible) { opacity: 0; translate: 0 22px; }
+.reveal.is-visible { opacity: 1; translate: 0 0; }
+
+
+/* ==========================================================================
+   16. REDUCED MOTION: people who ask their OS for less motion get none
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: .01ms !important;
+    transition-delay: 0ms !important;
+  }
+  .js-ready .reveal:not(.is-visible) { opacity: 1; translate: none; }
+  .js-ready .reveal:not(.is-visible) .doodle path { stroke-dashoffset: 0; }
+  .btn:hover, .service-card:hover, .testimonial:hover, .circle-btn:hover, .badge:hover, .social-link:hover { transform: none; rotate: none; }
+}
